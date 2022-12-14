@@ -1,30 +1,34 @@
-import sys
-from Levenshtein import distance
+import random
+import Levenshtein
 
-# Read the dictionary from a file
+# read the dictionary text file into a list of words
 with open('dizionario.txt') as f:
     words = f.read().splitlines()
 
-# Read the sentence to be transformed from the command line arguments
-sentence = ' '.join(sys.argv[1:])
+# prompt the user for a Levenshtein distance
+while True:
+    try:
+        distance = int(input('Enter the Levenshtein distance: '))
+        break
+    except ValueError:
+        print('Please enter a valid integer for the Levenshtein distance.')
 
-# Split the sentence into individual words
-words = sentence.split()
+# get the input sentence from the user
+sentence = input('Enter the sentence: ')
 
-# Replace each word with another word in the dictionary that has the
-# specified Levenshtein distance
-output = []
-levenshtein_distance = int(sys.argv[1])
-for word in words:
-    # Compute the Levenshtein distance between the word and each word
-    # in the dictionary
-    distances = [distance(word, w) for w in words]
+# split the sentence into a list of words
+sentence_words = sentence.split()
+
+# create a new list to store the modified words
+modified_words = []
+
+# iterate over the words in the sentence
+for word in sentence_words:
+    # choose a random word from the dictionary with the specified Levenshtein distance
+    modified_word = random.choice([w for w in words if Levenshtein.distance(word, w) == distance])
     
-    # Find the index of the closest word in the dictionary
-    closest_index = min(range(len(distances)), key=distances.__getitem__)
-    
-    # Replace the word with the closest word in the dictionary
-    output.append(words[closest_index])
+    # add the modified word to the list
+    modified_words.append(modified_word)
 
-# Join the words back into a sentence and print it
-print(' '.join(output))
+# join the modified words into a sentence and print it
+print(' '.join(modified_words))
