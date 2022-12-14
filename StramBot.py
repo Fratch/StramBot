@@ -13,6 +13,14 @@ while True:
     except ValueError:
         print('Please enter a valid integer for the Levenshtein distance.')
 
+# prompt the user for a preference on word length
+while True:
+    length_preference = input('Do the new words need to be the same length as the original ones? (y/n) ')
+    if length_preference == 'y' or length_preference == 'n':
+        break
+    else:
+        print('Please enter "y" or "n".')
+
 # get the input sentence from the user
 sentence = input('Enter the sentence: ')
 
@@ -25,7 +33,17 @@ modified_words = []
 # iterate over the words in the sentence
 for word in sentence_words:
     # choose a random word from the dictionary with the specified Levenshtein distance
-    modified_word = random.choice([w for w in words if Levenshtein.distance(word, w) == distance])
+    # if no such word exists, use the original word instead
+    if length_preference == 'y':
+        # only consider words with the same length as the original word
+        word_list = [w for w in words if Levenshtein.distance(word, w) == distance and len(w) == len(word)]
+        if word_list:  # make sure the list is not empty
+            modified_word = random.choice(word_list)
+        else:
+            modified_word = word
+    else:
+        # consider any words with the specified Levenshtein distance, regardless of length
+        modified_word = random.choice([w for w in words if Levenshtein.distance(word, w) == distance]) or word
     
     # add the modified word to the list
     modified_words.append(modified_word)
