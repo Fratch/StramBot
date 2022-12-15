@@ -5,6 +5,13 @@ import Levenshtein
 with open('dizionario.txt') as f:
     words = f.read().splitlines()
 
+# read the words from additional dictionary files
+# with open('dizionario_2.txt') as f:
+#    words.extend(f.read().splitlines())
+
+# with open('dizionario_3.txt') as f:
+#    words.extend(f.read().splitlines())
+
 # prompt the user for a Levenshtein distance
 while True:
     try:
