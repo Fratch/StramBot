@@ -1,59 +1,62 @@
+import os
 import random
 import Levenshtein
 
-# read the dictionary text file into a list of words
-with open('dizionario.txt') as f:
-    words = f.read().splitlines()
+def read_dictionaries(folder):
+    """Read all dictionaries in the given folder and return a list of words."""
+    words = []
+    for file in os.listdir(folder):
+        # only consider files ending in .txt
+        if file.endswith('.txt'):
+            with open(os.path.join(folder, file)) as f:
+                words.extend(f.read().splitlines())
+    return words
 
-# read the words from additional dictionary files
-# with open('dizionario_2.txt') as f:
-#    words.extend(f.read().splitlines())
-
-# with open('dizionario_3.txt') as f:
-#    words.extend(f.read().splitlines())
-
-# prompt the user for a Levenshtein distance
-while True:
-    try:
-        distance = int(input('Enter the Levenshtein distance: '))
-        break
-    except ValueError:
-        print('Please enter a valid integer for the Levenshtein distance.')
-
-# prompt the user for a preference on word length
-while True:
-    length_preference = input('Do the new words need to be the same length as the original ones? (y/n) ')
-    if length_preference == 'y' or length_preference == 'n':
-        break
-    else:
-        print('Please enter "y" or "n".')
-
-# get the input sentence from the user
-sentence = input('Enter the sentence: ')
-
-# split the sentence into a list of words
-sentence_words = sentence.split()
-
-# create a new list to store the modified words
-modified_words = []
-
-# iterate over the words in the sentence
-for word in sentence_words:
-    # choose a random word from the dictionary with the specified Levenshtein distance
-    # if no such word exists, use the original word instead
-    if length_preference == 'y':
-        # only consider words with the same length as the original word
-        word_list = [w for w in words if Levenshtein.distance(word, w) == distance and len(w) == len(word)]
-        if word_list:  # make sure the list is not empty
-            modified_word = random.choice(word_list)
+def get_user_input(prompt, valid_inputs):
+    """Prompt the user for input and return it if it is valid, otherwise repeat the prompt."""
+    while True:
+        user_input = input(prompt)
+        if user_input in valid_inputs:
+            return user_input
         else:
-            modified_word = word
-    else:
-        # consider any words with the specified Levenshtein distance, regardless of length
-        modified_word = random.choice([w for w in words if Levenshtein.distance(word, w) == distance]) or word
-    
-    # add the modified word to the list
-    modified_words.append(modified_word)
+            print(f'Please enter one of the following: {", ".join(valid_inputs)}')
 
-# join the modified words into a sentence and print it
-print(' '.join(modified_words))
+def modify_sentence(sentence, words, distance, length_preference):
+    """Modify the sentence by replacing each word with a random word from the dictionary with the specified Levenshtein distance."""
+    sentence_words = sentence.split()
+    modified_words = []
+    for word in sentence_words:
+        if length_preference == 'y':
+            # only consider words with the same length as the original word
+            word_list = [w for w in words if Levenshtein.distance(word, w) == distance and len(w) == len(word)]
+            if word_list:  # make sure the list is not empty
+                modified_word = random.choice(word_list)
+            else:
+                modified_word = word
+        else:
+            # consider any words with the specified Levenshtein distance, regardless of length
+            modified_word = random.choice([w for w in words if Levenshtein.distance(word, w) == distance]) or word
+        modified_words.append(modified_word)
+    return ' '.join(modified_words)
+
+def main():
+    # read the dictionary files
+    words = read_dictionaries('dictionaries')
+
+    # prompt the user for a Levenshtein distance
+    distance = int(get_user_input('Enter the Levenshtein distance: ', map(str, range(100))))
+
+    # prompt the user for a preference on word length
+    length_preference = get_user_input('Do the new words need to be the same length as the original ones? (y/n) ', ['y', 'n'])
+
+    # get the input sentence from the user
+    sentence = input('Enter the sentence: ')
+
+    # modify the sentence
+    modified_sentence = modify_sentence(sentence, words, distance, length_preference)
+
+    # print the modified sentence
+    print(modified_sentence)
+
+if __name__ == '__main__':
+    main()
