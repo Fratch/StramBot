@@ -5,11 +5,16 @@ import Levenshtein
 def read_dictionaries(folder):
     """Read all dictionaries in the given folder and return a list of words."""
     words = []
-    for file in os.listdir(folder):
-        # only consider files ending in .txt
-        if file.endswith('.txt'):
-            with open(os.path.join(folder, file)) as f:
-                words.extend(f.read().splitlines())
+    try:
+        for file in os.listdir(folder):
+            # only consider files ending in .txt
+            if file.endswith('.txt'):
+                with open(os.path.join(folder, file)) as f:
+                    words.extend(f.read().splitlines())
+    except FileNotFoundError:
+        print(f'Error: Folder "{folder}" not found')
+    except OSError:
+        print(f'Error: Could not read files in folder "{folder}"')
     return words
 
 def get_user_input(prompt, valid_inputs):
@@ -42,21 +47,36 @@ def modify_sentence(sentence, words, distance, length_preference):
 def main():
     # read the dictionary files
     words = read_dictionaries('dictionaries')
+    if not words:
+        words = ['word']  # provide a default list of words if the dictionaries are empty
+    else:
+        # prompt the user for a Levenshtein distance
+        while True:
+            try:
+                distance = int(input('Enter the Levenshtein distance: '))
+                if distance >= 0:
+                    break
+                else:
+                    print('\033[31mError: Please enter a positive integer for the Levenshtein distance\033[0m')
+            except ValueError:
+                print('\033[31mError: Please enter a positive integer for the Levenshtein distance\033[0m')
 
-    # prompt the user for a Levenshtein distance
-    distance = int(get_user_input('Enter the Levenshtein distance: ', map(str, range(100))))
+        # prompt the user for a preference on word length
+        length_preference = get_user_input('Do the new words need to be the same length as the original ones? (y/n) ', ['y', 'n'])
 
-    # prompt the user for a preference on word length
-    length_preference = get_user_input('Do the new words need to be the same length as the original ones? (y/n) ', ['y', 'n'])
+        # get the input sentence from the user
+        while True:
+            sentence = input('Enter the sentence: ')
+            if sentence:  # make sure the sentence is not empty
+                break
+            else:
+                print('\033[31mError: Please enter a non-empty sentence\033[0m')
 
-    # get the input sentence from the user
-    sentence = input('Enter the sentence: ')
+        # modify the sentence
+        modified_sentence = modify_sentence(sentence, words, distance, length_preference)
 
-    # modify the sentence
-    modified_sentence = modify_sentence(sentence, words, distance, length_preference)
-
-    # print the modified sentence
-    print(modified_sentence)
+        # print the modified sentence
+        print(modified_sentence)
 
 if __name__ == '__main__':
     main()
