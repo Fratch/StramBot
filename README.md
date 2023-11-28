@@ -10,17 +10,22 @@ This Python script allows you to modify a given sentence by replacing each word 
    cd StramBot
    ```
 
-2. **Run the Script:**
+2. **Install Dependencies:**
+   ```bash
+    pip install -r requirements.txt
+    ```
+    
+3. **Run the Script:**
    ```bash
     python strambot.py
     ```
 
-3. **Follow the Prompts:**
+4. **Follow the Prompts:**
     - Enter the Levenshtein distance (a non-negative integer).
     - Choose whether the new words need to be the same length as the original ones (yes/no).
     - Enter the sentence you want to modify.
 
-4. **View the Result:**
+5. **View the Result:**
     The script will output the modified sentence.
 
 ## Requirements
@@ -46,7 +51,7 @@ Enter the sentence: The quick brown fox
 The output might be something like:
 
 ```bash
-Thy quiik broon fpx
+Thy quiik broon fax
 ```
 
 ## Notes
@@ -54,3 +59,6 @@ Thy quiik broon fpx
 - Invalid inputs will prompt error messages.
 - The script is case-sensitive.
 Feel free to customize the dictionaries or extend the functionality according to your needs.
+
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
