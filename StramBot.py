@@ -51,15 +51,13 @@ def main():
         words = ['word']  # provide a default list of words if the dictionaries are empty
     else:
         # prompt the user for a Levenshtein distance
-        while True:
-            try:
-                distance = int(input('Enter the Levenshtein distance: '))
-                if distance >= 0:
-                    break
-                else:
-                    print('\033[31mError: Please enter a positive integer for the Levenshtein distance\033[0m')
-            except ValueError:
-                print('\033[31mError: Please enter a positive integer for the Levenshtein distance\033[0m')
+        try:
+            distance = int(input('Enter the Levenshtein distance: '))
+            if distance < 0:
+                raise ValueError('Please enter a positive integer for the Levenshtein distance')
+        except ValueError as e:
+            print(f'\033[31mError: {e}\033[0m')
+            return
 
         # prompt the user for a preference on word length
         length_preference = get_user_input('Do the new words need to be the same length as the original ones? (y/n) ', ['y', 'n'])
